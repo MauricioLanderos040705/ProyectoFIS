@@ -1,0 +1,2 @@
+# Define qué archivos locales o generados no se subirán a Git.
+# Aquí se agregarán las reglas para dependencias, configuración privada y archivos temporales de SQLite.
