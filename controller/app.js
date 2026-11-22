@@ -70,7 +70,7 @@ async function guardarSweater() {
         });
         const datos = await respuesta.json();
         if (!respuesta.ok) throw new Error(datos.error || "No se pudo guardar el sweater.");
-        mensaje.textContent = "¡Sweater guardado en " + color.nombre + "! 🎁";
+        mensaje.textContent = "¡Sweater guardado en " + color.nombre + "! ";
     } catch (error) {
         mensaje.textContent = "No se guardó el sweater. " + error.message;
     } finally {
