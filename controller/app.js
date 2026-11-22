@@ -1,3 +1,80 @@
-// este archivo se es el que  en el navegador desde index.html.
-// Aquí se listarán los colores, se actualizará la vista previa del suéter y se enviará la confirmación a la API.
-// Después de guardar correctamente, se mostrará un mensaje y se volverá al listado sin selección activa.
+let colorElegido = null;
+let colorConfirmado = null;
+const paleta = document.getElementById("paleta");
+const confirmar = document.getElementById("confirmar");
+const guardar = document.getElementById("guardar");
+const mensaje = document.getElementById("mensaje");
+
+confirmar.onclick = confirmarColor;
+guardar.onclick = guardarSweater;
+cargarColores();
+
+async function cargarColores() {
+    try {
+        const respuesta = await fetch("/api/colores");
+        if (!respuesta.ok) throw new Error("No se pudieron cargar los colores.");
+        const colores = await respuesta.json();
+        if (!colores.length) throw new Error("No hay colores disponibles.");
+
+        colores.forEach(function (c, indice) {
+            const boton = document.createElement("button");
+            boton.type = "button";
+            boton.className = "color";
+            boton.style.backgroundColor = c.hex;
+            boton.title = c.nombre;
+            boton.setAttribute("aria-label", c.nombre);
+            boton.onclick = function () { cambiarColor(c, boton); };
+            paleta.appendChild(boton);
+            if (indice === 0) cambiarColor(c, boton);
+        });
+        confirmar.disabled = false;
+    } catch (error) {
+        document.getElementById("resultado").textContent = "Colores no disponibles";
+        mensaje.textContent = error.message;
+    }
+}
+
+function cambiarColor(c, boton) {
+    if (colorElegido?.id !== c.id) {
+        colorConfirmado = null;
+        guardar.disabled = true;
+    }
+    colorElegido = c;
+    document.getElementById("sueter").style.fill = c.hex;
+    document.getElementById("resultado").textContent = "Color seleccionado: " + c.nombre;
+    document.querySelectorAll(".color").forEach(function (b) {
+        b.classList.remove("activo");
+    });
+    boton.classList.add("activo");
+    mensaje.textContent = "";
+}
+
+function confirmarColor() {
+    if (!colorElegido) return;
+    colorConfirmado = colorElegido;
+    guardar.disabled = false;
+    mensaje.textContent = "Color confirmado: " + colorConfirmado.nombre;
+}
+
+async function guardarSweater() {
+    if (!colorConfirmado || guardar.disabled) return;
+    const color = colorConfirmado;
+    guardar.disabled = true;
+    confirmar.disabled = true;
+    mensaje.textContent = "Guardando sweater...";
+    try {
+        const respuesta = await fetch("/api/disenos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idColor: color.id })
+        });
+        const datos = await respuesta.json();
+        if (!respuesta.ok) throw new Error(datos.error || "No se pudo guardar el sweater.");
+        mensaje.textContent = "¡Sweater guardado en " + color.nombre + "! 🎁";
+    } catch (error) {
+        mensaje.textContent = "No se guardó el sweater. " + error.message;
+    } finally {
+        guardar.disabled = !colorConfirmado;
+        confirmar.disabled = false;
+    }
+}

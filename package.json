@@ -1,3 +1,11 @@
 {
-  "description": "Configuración del proyecto Node.js. Aquí se definirán las dependencias del servidor y SQLite, además de los comandos para ejecutar la aplicación."
+  "name": "proyecto-fis",
+  "private": true,
+  "description": "Vista previa y guardado local del color de un sweater con SQLite.",
+  "scripts": {
+    "start": "node servidor.js"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
 }

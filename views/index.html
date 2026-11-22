@@ -1,11 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vista previa del Sweater</title>
+<link rel="stylesheet" href="/resources/styles/estilos.css">
 </head>
 <body>
-    <h1>Hola FIS</h1>
+<h1>🎄 My Ugly Sweater </h1>
+<h2>Vista previa de tu sweater</h2>
+<div class="contenedor">
+<div class="editor">
+<div class="vista">
+<svg viewBox="0 0 300 300">
+<path id="sueter"
+d="M105 45 L75 55 L25 100 L55 155
+L80 135 L80 255 L220 255 L220 135
+L245 155 L275 100 L225 55 L195 45
+Q150 75 105 45 Z"
+fill="#C62828"
+stroke="#43251c"
+stroke-width="5"/>
+<text x="150" y="165"
+text-anchor="middle"
+font-size="40"></text>
+</svg>
+</div>
+<div class="panel-color">
+<span class="etiqueta">color</span>
+<div class="paleta" id="paleta"></div>
+<h3 id="resultado">Cargando colores...</h3>
+</div>
+</div>
+<div class="acciones">
+<button class="confirmar" id="confirmar" disabled>confirmar color</button>
+<button class="guardar" id="guardar" disabled>guardar sweater</button>
+</div>
+<div id="mensaje"></div>
+</div>
+<script src="/controller/app.js"></script>
 </body>
 </html>
