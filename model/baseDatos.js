@@ -30,8 +30,11 @@ db.exec(`
     );
 `);
 
-// Los mismos colores de la interfaz; los registros existentes no se modifican.
+// Colores de la colección y del catálogo anterior; no se modifican registros existentes.
 const colores = [
+    ["Cereza", "#A8242F"], ["Pino", "#1E5144"],
+    ["Nieve", "#EDE7DB"], ["Noche", "#263650"],
+    ["Carbón", "#272727"],
     ["Rojo", "#C62828"], ["Rojo oscuro", "#7F1D1D"],
     ["Rosa", "#F48FB1"], ["Fucsia", "#D81B60"],
     ["Naranja", "#EF6C00"], ["Dorado", "#D4A017"],
