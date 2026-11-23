@@ -49,7 +49,6 @@ async function cargarColores() {
         coloresDisponibles = await respuesta.json();
         if (!coloresDisponibles.length) throw new Error("No hay colores disponibles.");
 
-        // Primero la colección de Figma; el catálogo anterior sigue disponible.
         coloresDisponibles.sort(function (a, b) {
             const ordenA = coloresColeccion.indexOf(a.nombre);
             const ordenB = coloresColeccion.indexOf(b.nombre);

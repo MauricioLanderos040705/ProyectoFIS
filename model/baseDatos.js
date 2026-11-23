@@ -30,7 +30,6 @@ db.exec(`
     );
 `);
 
-// Colores de la colección y del catálogo anterior; no se modifican registros existentes.
 const colores = [
     ["Cereza", "#A8242F"], ["Pino", "#1E5144"],
     ["Nieve", "#EDE7DB"], ["Noche", "#263650"],
@@ -65,8 +64,7 @@ function guardarDiseno(idColor) {
     const color = db.prepare("SELECT IdColor FROM Colores WHERE IdColor = ? AND Activo = 1").get(idColor);
     if (!color) return null;
 
-    // El prototipo no tiene inicio de sesión. Sus guardados usan un usuario local
-    // propio para no atribuir los diseños a otro usuario existente.
+
     db.prepare("INSERT OR IGNORE INTO Usuarios (Nombre, Email) VALUES (?, ?)")
         .run("Usuario local", "prototipo@localhost");
     const usuario = db.prepare("SELECT IdUsuario FROM Usuarios WHERE Email = ?")
