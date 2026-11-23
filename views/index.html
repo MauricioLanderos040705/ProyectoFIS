@@ -162,7 +162,7 @@
         <div class="editor">
             <div class="vista">
 
-                <model-viewer src="sueter.glb" 
+                <model-viewer src="sueter.glb"
                     alt="Modelo 3D del sweater"
                     shadow-intensity="0"
                     camera-controls
@@ -223,6 +223,8 @@
         let colorConfirmado = colores[0];
 
         const paleta = document.getElementById("paleta");
+        const visor = document.querySelector("model-viewer");
+
 
         colores.forEach(function (c) {
             const boton = document.createElement("button");
@@ -238,6 +240,7 @@
         function cambiarColor(c, boton) {
             colorElegido = c;
             document.getElementById("sueter").style.fill = c.hex;
+            aplicarColor(c.hex);
             document.getElementById("resultado").textContent =
                 "Color seleccionado: " + c.nombre;
             document.querySelectorAll(".color").forEach(function (b) {
@@ -262,6 +265,38 @@
             document.getElementById("mensaje").textContent =
                 "¡Sweater guardado en " + sweater.color + "! 🎁";
         }
+
+        let materialSueter;
+
+        visor.addEventListener("load", function () {
+            materialSueter = visor.model.materials.find(
+                material => material.name === "Material"
+            );
+
+            if (!materialSueter) {
+                console.error("No se encontró el material del suéter.");
+                document.getElementById("mensaje").textContent =
+                    "No se encontró el material del suéter.";
+                return;
+            }
+
+            aplicarColor(colorElegido.hex);
+        });
+
+        visor.addEventListener("error", function () {
+            document.getElementById("mensaje").textContent =
+                "No se pudo cargar el modelo 3D.";
+        });
+
+        function aplicarColor(hex) {
+            if (!materialSueter) return;
+
+            const rgb = hex.match(/[0-9a-f]{2}/gi)
+                .map(valor => parseInt(valor, 16) / 255);
+
+            materialSueter.pbrMetallicRoughness.setBaseColorFactor([...rgb, 1]);
+        }
+
     </script>
 
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
