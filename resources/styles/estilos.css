@@ -4,7 +4,7 @@
 
 body {
     background-color: #0B1F3A;
-    background-image: url('/resources/images/nieve_fondo.jpg');
+    background-image: url('/views/nieve_fondo.jpg');
     font-family: Arial, sans-serif;
     text-align: center;
     color: #FFF8E7;
@@ -24,7 +24,7 @@ h2 {
 
 .contenedor {
     background-color: #000000;
-    background-image: url('/resources/images/tapete.jpg');
+    background-image: url('/views/tapete.jpg');
     background-size: cover;
     border: 3px solid #BB5555;
     border-radius: 15px;
