@@ -28,6 +28,7 @@ db.exec(`
         FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario),
         FOREIGN KEY (IdColor) REFERENCES Colores(IdColor)
     );
+    
 `);
 
 const colores = [
