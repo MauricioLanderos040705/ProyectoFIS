@@ -127,6 +127,15 @@ h1 em, h2 em { color: var(--red); font-weight: 400; }
 .story-star { display: block; margin-bottom: 30px; color: var(--gold); font-size: 30px; }
 .story blockquote { max-width: 960px; margin: 30px auto; font-family: var(--serif); font-size: clamp(35px, 4.5vw, 66px); letter-spacing: -.035em; line-height: 1.1; }
 .light-link { display: inline-flex; align-items: center; gap: 10px; padding-bottom: 6px; border-bottom: 1px solid #ffffff80; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.tejido {
+    fill: var(--sweater-color, #a8242f);
+    transition: fill .25s ease;
+}
+.preview-art { background: #efede8; }
+
+.decoracion {
+    fill: #fff0d2; /* siempre crema */
+}
 
 /* Taller: vista previa y selección de color */
 .customizer { min-height: 900px; padding: 54px clamp(24px, 7vw, 110px) 90px; }
@@ -172,6 +181,7 @@ footer { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center;
 footer > p { color: #b6b0a6; font-family: var(--serif); font-size: 15px; font-style: italic; text-align: center; }
 footer > div:last-child { display: flex; justify-content: end; gap: 22px; }
 .noscript-message { padding: 20px; text-align: center; }
+.preview-art { background: #efede8; }
 
 /* Tablet y celular */
 @media (max-width: 1000px) {

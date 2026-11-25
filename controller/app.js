@@ -13,10 +13,7 @@ const sueter = document.getElementById("sueter");
 
 // Los colores base siempre vienen de SQLite. Estos son detalles de presentación.
 const coloresColeccion = ["Cereza", "Pino", "Nieve", "Noche", "Rosa", "Carbón"];
-const acentos = {
-    "Cereza": "#F5D7A3", "Pino": "#F0C75E", "Nieve": "#A8242F",
-    "Noche": "#E8B955", "Rosa": "#6C1C2B", "Carbón": "#F2D7A0"
-};
+
 
 confirmar.onclick = confirmarColor;
 guardar.onclick = guardarSweater;
@@ -94,11 +91,8 @@ function cambiarColor(c) {
     if (guardando) return;
     if (colorElegido?.id !== c.id) colorConfirmado = null;
     colorElegido = c;
-    const acento = acentos[c.nombre] || "#F5D7A3";
     sueter.style.setProperty("--sweater-color", c.hex);
-    sueter.style.setProperty("--sweater-accent", acento);
-    sueter.setAttribute("aria-label", "Vista previa del suéter en color " + c.nombre);
-    document.getElementById("fondo-preview").style.backgroundColor = acento + "24";
+    sueter.setAttribute("aria-label", "Vista previa del suéter en color " + c.nombre);  
     document.getElementById("resultado").textContent = c.nombre;
     document.querySelectorAll(".color-option").forEach(function (boton) {
         const activo = Number(boton.dataset.id) === c.id;
