@@ -28,23 +28,11 @@
             disenos: "/api/disenos"
         },
         hashEditor: "#customizer",
-        coloresVisibles: 6,          // cuántos colores se ven sin abrir "Ver más colores"
-        acentoPorDefecto: "#F5D7A3",
-        transparenciaFondo: "24"     // alfa hexadecimal del fondo de la vista previa
+        coloresVisibles: 6           // cuántos colores se ven sin abrir "Ver más colores"
     };
 
-    // Los colores base vienen de SQLite. Esto es solo presentación:
-    // el orden en que se muestran y el color de acento de cada uno.
+    // Los colores base vienen de SQLite. Aquí se indica el orden de presentación.
     const ORDEN_COLORES = ["Cereza", "Pino", "Nieve", "Noche", "Rosa", "Carbón"];
-
-    const ACENTOS = {
-        "Cereza": "#F5D7A3",
-        "Pino":   "#F0C75E",
-        "Nieve":  "#A8242F",
-        "Noche":  "#E8B955",
-        "Rosa":   "#6C1C2B",
-        "Carbón": "#F2D7A0"
-    };
 
     // Todos los textos que ve el usuario, en un solo lugar.
     const TEXTOS = {
@@ -60,7 +48,7 @@
         guardado:        (nombre) => "¡Tu diseño en " + nombre + " se guardó! Puedes elegir otro color o volver a la tienda.",
         errorGuardar:    (detalle) => "No se guardó el diseño. " + detalle,
         etiquetaColor:   (nombre) => "Elegir color " + nombre,
-        etiquetaSueter:  (nombre) => "Vista previa del suéter en color " + nombre
+        etiquetaSueter:  (nombre) => "Vista previa del suéter con venado en color " + nombre
     };
 
     /* ======================================================================
@@ -97,7 +85,6 @@
         paleta:           $("paleta"),
         coloresExtra:     $("colores-extra"),
         masColores:       $("mas-colores"),
-        fondoPreview:     $("fondo-preview"),
         sueter:           $("sueter"),
         btnConfirmar:     $("confirmar"),
         btnGuardar:       $("guardar"),
@@ -160,11 +147,8 @@
     function renderVistaPrevia() {
         const color = state.elegido;
         if (!color) return;
-        const acento = acentoDe(color);
         dom.sueter.style.setProperty("--sweater-color", color.hex);
-        dom.sueter.style.setProperty("--sweater-accent", acento);
         dom.sueter.setAttribute("aria-label", TEXTOS.etiquetaSueter(color.nombre));
-        dom.fondoPreview.style.backgroundColor = acento + CONFIG.transparenciaFondo;
     }
 
     function renderBotonesColor() {
@@ -213,10 +197,6 @@
         boton.append(muestra, document.createTextNode(color.nombre));
         boton.addEventListener("click", () => elegirColor(color));
         return boton;
-    }
-
-    function acentoDe(color) {
-        return ACENTOS[color.nombre] || CONFIG.acentoPorDefecto;
     }
 
     /* ======================================================================
