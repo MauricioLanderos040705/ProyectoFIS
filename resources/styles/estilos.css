@@ -4,6 +4,7 @@
 
 body {
     background-color: #0B1F3A;
+    background-image: url('/views/nieve_fondo.jpg');
     font-family: Arial, sans-serif;
     text-align: center;
     color: #FFF8E7;
@@ -22,8 +23,10 @@ h2 {
 }
 
 .contenedor {
-    background-color: #12325C;
-    border: 3px solid #D4A017;
+    background-color: #000000;
+    background-image: url('/views/tapete.jpg');
+    background-size: cover;
+    border: 3px solid #BB5555;
     border-radius: 15px;
     padding: 25px;
     max-width: 720px;
@@ -53,7 +56,7 @@ svg {
     border: 3px solid #D4A017;
     border-radius: 12px;
     padding: 28px 15px 15px;
-    background-color: #0B1F3A;
+    background-color: #000000;
 }
 
 .panel-color .etiqueta {
@@ -127,6 +130,12 @@ svg {
 .guardar {
     background-color: #D4A017;
     color: #0B1F3A;
+}
+
+.cancelar {
+    background-color: transparent;
+    color: #FFF8E7;
+    box-shadow: inset 0 0 0 2px #FFF8E7;
 }
 
 .acciones button:hover:not(:disabled) {

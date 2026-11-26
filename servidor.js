@@ -8,7 +8,10 @@ const archivos = {
     "/views/index.html": ["views/index.html", "text/html; charset=utf-8"],
     "/views/sueter.glb": ["views/sueter.glb", "model/gltf-binary"],
     "/controller/app.js": ["controller/app.js", "text/javascript; charset=utf-8"],
-    "/resources/styles/estilos.css": ["resources/styles/estilos.css", "text/css; charset=utf-8"]
+    "/resources/styles/estilos.css": ["resources/styles/estilos.css", "text/css; charset=utf-8"],
+    "/views/nieve_fondo.jpg": ["views/nieve_fondo.jpg", "image/jpeg"],
+    "/views/tapete.jpg": ["views/tapete.jpg", "image/jpeg"],
+    "/views/sueter.glb": ["views/sueter.glb", "model/gltf-binary"]
 };
 
 const servidor = http.createServer(async function (peticion, respuesta) {
