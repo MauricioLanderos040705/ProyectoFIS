@@ -1,4 +1,4 @@
-const { listarColores, guardarDiseno } = require("../model/baseDatos");
+const { listarColores, listarTallas, existeTalla, guardarDiseno } = require("../model/baseDatos");
 
 function enviarJson(respuesta, estado, datos) {
     respuesta.writeHead(estado, { "Content-Type": "application/json; charset=utf-8" });
@@ -8,6 +8,11 @@ function enviarJson(respuesta, estado, datos) {
 async function atenderApi(peticion, respuesta, ruta) {
     if (ruta === "/api/colores" && peticion.method === "GET") {
         enviarJson(respuesta, 200, listarColores());
+        return;
+    }
+
+    if (ruta === "/api/tallas" && peticion.method === "GET") {
+        enviarJson(respuesta, 200, listarTallas());
         return;
     }
 
@@ -32,8 +37,13 @@ async function atenderApi(peticion, respuesta, ruta) {
             enviarJson(respuesta, 400, { error: "Selecciona y confirma un color válido." });
             return;
         }
+        const idTalla = datos.idTalla;
+        if (idTalla !== undefined && (typeof idTalla !== "string" || !existeTalla(idTalla))) {
+            enviarJson(respuesta, 400, { error: "Selecciona y confirma una talla válida." });
+            return;
+        }
 
-        const diseno = guardarDiseno(datos.idColor);
+        const diseno = guardarDiseno(datos.idColor, idTalla);
         if (!diseno) {
             enviarJson(respuesta, 400, { error: "El color no existe o no está disponible." });
             return;
@@ -42,8 +52,8 @@ async function atenderApi(peticion, respuesta, ruta) {
         return;
     }
 
-    if (ruta === "/api/colores" || ruta === "/api/disenos") {
-        respuesta.setHeader("Allow", ruta === "/api/colores" ? "GET" : "POST");
+    if (ruta === "/api/colores" || ruta === "/api/tallas" || ruta === "/api/disenos") {
+        respuesta.setHeader("Allow", ruta === "/api/disenos" ? "POST" : "GET");
         enviarJson(respuesta, 405, { error: "Método no permitido." });
         return;
     }

@@ -25,6 +25,7 @@
     const CONFIG = {
         endpoints: {
             colores: "/api/colores",
+            tallas: "/api/tallas",
             disenos: "/api/disenos"
         },
         hashEditor: "#customizer",
@@ -33,21 +34,28 @@
 
     // Los colores base vienen de SQLite. Aquí se indica el orden de presentación.
     const ORDEN_COLORES = ["Cereza", "Pino", "Nieve", "Noche", "Rosa", "Carbón"];
+    const MEDIDAS = { pecho: "Pecho", largo: "Largo", brazo: "Brazo" };
 
     // Todos los textos que ve el usuario, en un solo lugar.
     const TEXTOS = {
         cargando:        "Cargando colores…",
-        sinColores:      "Colores no disponibles",
+        sinOpciones:     "Opciones no disponibles",
         errorCarga:      "No se pudieron cargar los colores.",
         listaVacia:      "No hay colores disponibles.",
+        errorTallas:     "No hay tallas disponibles.",
         reintentar:      " Recarga la página para volver a intentarlo.",
         errorGenerico:   "Inténtalo de nuevo.",
-        pideConfirmar:   "Confirma tu color para guardar el diseño.",
+        pideConfirmar:   "Confirma el color y la talla para guardar tu diseño.",
+        confirmarColor:  "Confirmar color",
+        colorConfirmado: "Color confirmado",
+        confirmarTalla:  "Confirmar talla",
+        tallaConfirmada: "Talla confirmada",
         guardando:       "Guardando tu diseño…",
-        confirmado:      (nombre) => "Color confirmado: " + nombre + ". Ya puedes guardar tu diseño.",
-        guardado:        (nombre) => "¡Tu diseño en " + nombre + " se guardó! Puedes elegir otro color o volver a la tienda.",
+        guardado:        (nombre, talla) => "¡Tu diseño en " + nombre + ", talla " + talla + ", se guardó!",
         errorGuardar:    (detalle) => "No se guardó el diseño. " + detalle,
         etiquetaColor:   (nombre) => "Elegir color " + nombre,
+        etiquetaTalla:   (talla) => talla.nombre + " (" + talla.id + ")",
+        medidaTalla:     (nombre, valor) => nombre + ": " + valor + " cm",
         etiquetaSueter:  (nombre) => "Vista previa del suéter con venado en color " + nombre
     };
 
@@ -59,7 +67,9 @@
         status: "loading",   // "loading" | "ready" | "error"
         colores: [],         // lista que llega del servidor
         elegido: null,       // color seleccionado (aún sin confirmar)
-        confirmado: null,    // color confirmado, listo para guardar
+        confirmado: null,
+        tallaElegida: null,
+        tallaConfirmada: null,
         guardando: false,
         mensaje: { texto: "", esError: false }
     };
@@ -82,11 +92,16 @@
         vistaEditor:      $("customizer"),
         enlaceEditor:     $("enlace-editor"),
         titulo:           $("resultado"),
+        taller:           document.querySelector(".customizer-workspace"),
         paleta:           $("paleta"),
         coloresExtra:     $("colores-extra"),
         masColores:       $("mas-colores"),
         sueter:           $("sueter"),
+        tallas:           $("tallas"),
+        plantillaTalla:   $("plantilla-talla"),
         btnConfirmar:     $("confirmar"),
+        btnConfirmarTalla: $("confirmar-talla"),
+        textoConfirmarTalla: $("texto-confirmar-talla"),
         btnGuardar:       $("guardar"),
         btnRestablecer:   $("restablecer"),
         mensaje:          $("mensaje")
@@ -94,6 +109,7 @@
 
     // Botones de color ya creados, por id de color: { id → <button> }
     const botonesColor = new Map();
+    const radiosTalla = new Map();
 
     /* ======================================================================
        4. API (solo habla con el servidor, no toca la pantalla)
@@ -115,11 +131,19 @@
         return ordenarColores(colores);
     }
 
-    async function enviarDiseno(idColor) {
+    async function pedirTallas() {
+        const respuesta = await fetch(CONFIG.endpoints.tallas);
+        if (!respuesta.ok) throw new Error(TEXTOS.errorTallas);
+        const tallas = await respuesta.json();
+        if (!tallas.length) throw new Error(TEXTOS.errorTallas);
+        return tallas;
+    }
+
+    async function enviarDiseno(idColor, idTalla) {
         const respuesta = await fetch(CONFIG.endpoints.disenos, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idColor })
+            body: JSON.stringify({ idColor, idTalla })
         });
         const datos = await respuesta.json();
         if (!respuesta.ok) throw new Error(datos.error || TEXTOS.errorGenerico);
@@ -134,20 +158,21 @@
         renderTitulo();
         renderVistaPrevia();
         renderBotonesColor();
+        renderTallas();
         renderAcciones();
         renderMensaje();
     }
 
     function renderTitulo() {
         if (state.status === "loading") dom.titulo.textContent = TEXTOS.cargando;
-        else if (state.status === "error") dom.titulo.textContent = TEXTOS.sinColores;
+        else if (state.status === "error") dom.titulo.textContent = TEXTOS.sinOpciones;
         else dom.titulo.textContent = state.elegido.nombre;
     }
 
     function renderVistaPrevia() {
         const color = state.elegido;
         if (!color) return;
-        dom.sueter.style.setProperty("--sweater-color", color.hex);
+        dom.taller.style.setProperty("--sweater-color", color.hex);
         dom.sueter.setAttribute("aria-label", TEXTOS.etiquetaSueter(color.nombre));
     }
 
@@ -160,14 +185,27 @@
         });
     }
 
+    function renderTallas() {
+        radiosTalla.forEach(function (radio, id) {
+            radio.checked = state.tallaElegida?.id === id;
+            radio.disabled = state.guardando;
+        });
+    }
+
     function renderAcciones() {
-        dom.btnConfirmar.disabled = state.guardando || !state.elegido;
-        dom.btnGuardar.disabled = state.guardando || !state.confirmado;
+        dom.btnConfirmar.disabled = state.guardando || !state.elegido || Boolean(state.confirmado);
+        dom.btnConfirmar.textContent = state.confirmado ? TEXTOS.colorConfirmado : TEXTOS.confirmarColor;
+        dom.btnConfirmar.classList.toggle("is-confirmed", Boolean(state.confirmado));
+        dom.btnConfirmarTalla.disabled = state.guardando || !state.tallaElegida || Boolean(state.tallaConfirmada);
+        dom.textoConfirmarTalla.textContent = state.tallaConfirmada ? TEXTOS.tallaConfirmada : TEXTOS.confirmarTalla;
+        dom.btnConfirmarTalla.classList.toggle("is-confirmed", Boolean(state.tallaConfirmada));
+        dom.btnGuardar.disabled = state.guardando || !state.confirmado || !state.tallaConfirmada;
         dom.btnRestablecer.disabled = state.guardando || !state.elegido;
     }
 
     function renderMensaje() {
-        dom.mensaje.textContent = state.mensaje.texto;
+        const faltaConfirmar = state.status === "ready" && (!state.confirmado || !state.tallaConfirmada);
+        dom.mensaje.textContent = state.mensaje.texto || (faltaConfirmar ? TEXTOS.pideConfirmar : "");
         dom.mensaje.classList.toggle("is-error", state.mensaje.esError);
     }
 
@@ -199,17 +237,44 @@
         return boton;
     }
 
+    function construirTallas(tallas) {
+        tallas.forEach(function (talla) {
+            const tarjeta = dom.plantillaTalla.content.firstElementChild.cloneNode(true);
+            const radio = tarjeta.querySelector(".size-input");
+            const etiqueta = tarjeta.querySelector(".size-option");
+            const nombre = tarjeta.querySelector(".size-option__name");
+            const medidas = tarjeta.querySelector(".size-option__measurements");
+
+            tarjeta.dataset.talla = talla.id;
+            radio.id = "talla-" + talla.id;
+            radio.value = talla.id;
+            etiqueta.htmlFor = radio.id;
+            nombre.id = radio.id + "-nombre";
+            medidas.id = radio.id + "-medidas";
+            radio.setAttribute("aria-labelledby", nombre.id);
+            radio.setAttribute("aria-describedby", medidas.id);
+            nombre.textContent = TEXTOS.etiquetaTalla(talla);
+            for (const [clave, etiquetaMedida] of Object.entries(MEDIDAS)) {
+                medidas.querySelector('[data-medida="' + clave + '"]').textContent =
+                    TEXTOS.medidaTalla(etiquetaMedida, talla[clave]);
+            }
+
+            radio.addEventListener("change", () => elegirTalla(talla));
+            radiosTalla.set(talla.id, radio);
+            dom.tallas.appendChild(tarjeta);
+        });
+    }
+
     /* ======================================================================
        6. ACCIONES (lo que hace el usuario → cambian el estado)
        ====================================================================== */
 
-    async function cargarColores() {
+    async function cargarOpciones() {
         try {
-            const colores = await pedirColores();
+            const [colores, tallas] = await Promise.all([pedirColores(), pedirTallas()]);
             construirPaleta(colores);
-            state.colores = colores;
-            state.status = "ready";
-            elegirColor(colores[0]);
+            construirTallas(tallas);
+            setState({ status: "ready", colores, elegido: colores[0] });
         } catch (error) {
             setState({
                 status: "error",
@@ -219,38 +284,49 @@
     }
 
     function elegirColor(color) {
-        if (state.guardando) return;
-        const cambioDeColor = !state.elegido || state.elegido.id !== color.id;
-        const confirmado = cambioDeColor ? null : state.confirmado;
-        setState({
-            elegido: color,
-            confirmado,
-            mensaje: aviso(confirmado ? TEXTOS.confirmado(color.nombre) : TEXTOS.pideConfirmar)
-        });
+        if (state.guardando || state.elegido?.id === color.id) return;
+        setState({ elegido: color, confirmado: null, mensaje: aviso("") });
     }
 
     function confirmarColor() {
         if (!state.elegido || state.guardando) return;
-        setState({
-            confirmado: state.elegido,
-            mensaje: aviso(TEXTOS.confirmado(state.elegido.nombre))
-        });
+        setState({ confirmado: state.elegido, mensaje: aviso("") });
+    }
+
+    function elegirTalla(talla) {
+        if (state.guardando || state.tallaElegida?.id === talla.id) return;
+        setState({ tallaElegida: talla, tallaConfirmada: null, mensaje: aviso("") });
+    }
+
+    function confirmarTalla() {
+        if (!state.tallaElegida || state.guardando) return;
+        setState({ tallaConfirmada: state.tallaElegida, mensaje: aviso("") });
     }
 
     function restablecerDiseno() {
         if (state.guardando || !state.colores.length) return;
-        state.confirmado = null;
         dom.masColores.open = false;
-        elegirColor(state.colores[0]);
+        setState({
+            elegido: state.colores[0],
+            confirmado: null,
+            tallaElegida: null,
+            tallaConfirmada: null,
+            mensaje: aviso("")
+        });
     }
 
     async function guardarDiseno() {
-        if (!state.confirmado || state.guardando) return;
+        if (!state.confirmado || !state.tallaConfirmada || state.guardando) return;
         const color = state.confirmado;
+        const talla = state.tallaConfirmada;
         setState({ guardando: true, mensaje: aviso(TEXTOS.guardando) });
         try {
-            await enviarDiseno(color.id);
-            setState({ confirmado: null, mensaje: aviso(TEXTOS.guardado(color.nombre)) });
+            await enviarDiseno(color.id, talla.id);
+            setState({
+                confirmado: null,
+                tallaConfirmada: null,
+                mensaje: aviso(TEXTOS.guardado(color.nombre, talla.id))
+            });
         } catch (error) {
             setState({ mensaje: aviso(TEXTOS.errorGuardar(error.message), true) });
         } finally {
@@ -288,13 +364,14 @@
 
     function iniciar() {
         dom.btnConfirmar.addEventListener("click", confirmarColor);
+        dom.btnConfirmarTalla.addEventListener("click", confirmarTalla);
         dom.btnGuardar.addEventListener("click", guardarDiseno);
         dom.btnRestablecer.addEventListener("click", restablecerDiseno);
         window.addEventListener("hashchange", mostrarVista);
 
         mostrarVista();
         render();
-        cargarColores();
+        cargarOpciones();
     }
 
     iniciar();

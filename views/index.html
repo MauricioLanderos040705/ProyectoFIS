@@ -10,7 +10,7 @@
 </head>
 <body>
 
-    
+
     <svg class="svg-definitions" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <filter id="sombra-sueter" x="-20%" y="-20%" width="140%" height="150%">
@@ -76,6 +76,10 @@
                 </g>
             </symbol>
             <symbol id="icono-flecha" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></symbol>
+            <symbol id="icono-pecho" viewBox="0 0 24 24"><path d="M3 12h18M6 9l-3 3 3 3m12-6 3 3-3 3"/></symbol>
+            <symbol id="icono-largo" viewBox="0 0 24 24"><path d="M12 3v18M9 6l3-3 3 3m-6 12 3 3 3-3"/></symbol>
+            <symbol id="icono-brazo" viewBox="0 0 24 24"><path d="m4 17 6-9 8-3 2 5-7 3-5 7Z"/></symbol>
+            <symbol id="icono-seleccion" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
         </defs>
     </svg>
 
@@ -125,7 +129,7 @@
                         <span class="orbit orbit-two" aria-hidden="true"></span>
                         <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
                         <span class="sparkle sparkle-two" aria-hidden="true">✦</span>
-                    
+
                         <svg class="sweater" viewBox="0 0 520 520" role="img" aria-label="Suéter navideño color cereza"><use href="#modelo-sueter"/></svg>
                     </div>
                 </section>
@@ -215,20 +219,50 @@
                             <div class="color-grid" id="colores-extra" role="group" aria-label="Más colores disponibles"></div>
                         </details>
 
-                        <div class="coming-next">
-                            <span>02</span>
+                        <button class="secondary-button confirm-color" id="confirmar" type="button" disabled>Confirmar color</button>
+                    </div>
+
+                    <section class="size-panel" aria-labelledby="titulo-tallas">
+                        <div class="size-panel-heading">
+                            <span class="step-number" aria-hidden="true">02</span>
                             <div>
-                                <strong>Más formas de hacerlo tuyo</strong>
-                                <p>Estampados, mensajes y detalles llegarán muy pronto.</p>
+                                <h2 id="titulo-tallas">Selección de tallas</h2>
+                                <p>Elige la talla de tu suéter.</p>
                             </div>
                         </div>
+                        <div class="size-grid" id="tallas" role="radiogroup" aria-labelledby="titulo-tallas"></div>
 
+                        <template id="plantilla-talla">
+                            <div class="size-card">
+                                <input class="size-input" type="radio" name="talla">
+                                <label class="size-option">
+                                    <span class="size-option__check" aria-hidden="true">
+                                        <svg class="icon"><use href="#icono-seleccion"/></svg>
+                                    </span>
+                                    <span class="size-option__preview" aria-hidden="true">
+                                        <svg viewBox="0 0 520 520"><use href="#modelo-sueter"/></svg>
+                                    </span>
+                                    <strong class="size-option__name"></strong>
+                                    <span class="size-option__measurements">
+                                        <span><svg class="icon" aria-hidden="true"><use href="#icono-pecho"/></svg><span data-medida="pecho"></span></span>
+                                        <span><svg class="icon" aria-hidden="true"><use href="#icono-largo"/></svg><span data-medida="largo"></span></span>
+                                        <span><svg class="icon" aria-hidden="true"><use href="#icono-brazo"/></svg><span data-medida="brazo"></span></span>
+                                    </span>
+                                </label>
+                            </div>
+                        </template>
+
+                        <button class="primary-button confirm-size" id="confirmar-talla" type="button" disabled>
+                            <span id="texto-confirmar-talla">Confirmar talla</span>
+                            <svg class="icon" aria-hidden="true"><use href="#icono-flecha"/></svg>
+                        </button>
+                    </section>
+
+                    <div class="design-actions">
                         <div class="editor-actions">
-                            <button class="secondary-button" id="confirmar" type="button" disabled>Confirmar color</button>
                             <button class="primary-button primary-button--wide" id="guardar" type="button" disabled>Guardar mi diseño <svg class="icon" aria-hidden="true"><use href="#icono-flecha"/></svg></button>
                             <button class="reset-button" id="restablecer" type="button" disabled>Restablecer diseño</button>
                         </div>
-
                         <p class="editor-message" id="mensaje" role="status" aria-live="polite" aria-atomic="true"></p>
                     </div>
                 </section>
@@ -244,4 +278,3 @@
     <noscript><p class="noscript-message">Activa JavaScript para elegir colores y guardar tu diseño.</p></noscript>
 </body>
 </html>
-    
