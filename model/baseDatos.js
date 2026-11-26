@@ -24,7 +24,7 @@ db.exec(`
         "IdDiseño" INTEGER PRIMARY KEY AUTOINCREMENT,
         IdUsuario INTEGER NOT NULL,
         IdColor INTEGER NOT NULL,
-        FechaCreacion TEXT NOT NULL DEFAULT (datetime('now')),
+        FechaCreacion TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
         FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario),
         FOREIGN KEY (IdColor) REFERENCES Colores(IdColor)
     );
@@ -68,8 +68,12 @@ function guardarDiseno(idColor) {
         .run("Usuario local", "prototipo@localhost");
     const usuario = db.prepare("SELECT IdUsuario FROM Usuarios WHERE Email = ?")
         .get("prototipo@localhost");
-    const resultado = db.prepare('INSERT INTO "Diseños" (IdUsuario, IdColor) VALUES (?, ?)')
-        .run(usuario.IdUsuario, idColor);
+    // Se indica la hora local también al insertar porque las bases existentes
+    // pueden conservar el valor predeterminado anterior en UTC.
+    const resultado = db.prepare(`
+        INSERT INTO "Diseños" (IdUsuario, IdColor, FechaCreacion)
+        VALUES (?, ?, datetime('now', 'localtime'))
+    `).run(usuario.IdUsuario, idColor);
     return { id: Number(resultado.lastInsertRowid), idColor };
 }
 

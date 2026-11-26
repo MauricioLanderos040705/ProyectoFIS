@@ -26,4 +26,5 @@ Se usa `DB/tienda.db` y sus tablas `Colores`, `Usuarios` y `Diseños`. La base e
 
 Como todavía no hay inicio de sesión, al guardar se crea o reutiliza un usuario llamado `Usuario local` (`prototipo@localhost`). Así los nuevos diseños no se atribuyen a los usuarios ya registrados. Seleccionar otro color requiere confirmarlo antes de guardar. El mensaje de éxito aparece únicamente cuando SQLite confirma el guardado.
 
+Los nuevos diseños guardan `FechaCreacion` con la fecha y hora local de la computadora que ejecuta el servidor, usando `datetime('now', 'localtime')`. Esto funciona también con una base creada anteriormente. Los registros anteriores conservan sus fechas originales en UTC.
 
